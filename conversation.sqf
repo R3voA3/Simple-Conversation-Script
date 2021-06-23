@@ -1,11 +1,12 @@
 /*
   Author: R3vo
 
-  Update:  2021-06-24
+  Update: 2021-06-24
   - Updated the script to modern standards
+  - Optimisations
 
-  Update:  2016-08-21
-  - added option for background
+  Update: 2016-08-21
+  - Added option for background
 
   Description:
   Displays a subtitle at the bottom of the screen. Name of the speaker can be defined and it's colour
@@ -62,7 +63,7 @@ private _colourHTML = switch (toUpper _colour) do
 
 private _fnc_showSubtitles =
 {
-  params ["_from", "_text", "_colourHTML", "_break", "_showBackground"];
+  params ["_from", "_text", "_break"];
 
   //Create display and control
   disableSerialization;
@@ -86,9 +87,12 @@ private _fnc_showSubtitles =
   _ctrlStructuredText ctrlSetFade 0;
   _ctrlStructuredText ctrlCommit 0;
 
-  _ctrlBackground ctrlSetPosition [_x, _y, _w, ctrlTextHeight _ctrlStructuredText];
-  _ctrlBackground ctrlSetFade 0;
-  _ctrlBackground ctrlCommit 0;
+  if (_showBackground) then
+  {
+    _ctrlBackground ctrlSetPosition [_x, _y, _w, ctrlTextHeight _ctrlStructuredText];
+    _ctrlBackground ctrlSetFade 0;
+    _ctrlBackground ctrlCommit 0;
+  };
 
   sleep _break;
 
@@ -99,12 +103,12 @@ private _fnc_showSubtitles =
 //Loop through all given lines
 {
   private _nameSpeaker = _x select 0;
-  private _currentLine = _x select 1;
+  private _text = _x select 1;
   private _speaker = _x param [2, objNull, [objNull]];
-  private _break = count _currentLine * _breakMultiplier;
+  private _break = count _text * _breakMultiplier;
 
   if !(isNull _speaker) then {_speaker setRandomLip true};
-  private _handle = [_nameSpeaker, _currentLine, _colourHTML, _break, _showBackground] spawn _fnc_showSubtitles;
+  private _handle = [_nameSpeaker, _text, _break] spawn _fnc_showSubtitles;
   waitUntil {scriptDone _handle};
 
   if !(isNull _speaker) then {_speaker setRandomLip false};
