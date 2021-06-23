@@ -7,11 +7,11 @@
   Displays a subtitle at the bottom of the screen. Name of the speaker can be defined and it's colour
 
   Parameters:
-  _this select 0: _array
-    _array select 0: STRING - Name of the person speaking - Default: Speaker
-    _array select 1: STRING - Subtitle - Default: Subtitle
-    _array select 2: OBJECT - Character which speaks the subtitle,  used to enable lip movement - Default: objNull
-  _this select 1: STRING - Chat type - Default: SIDE
+  0: ARRAY
+    0: STRING - Name of the person speaking - Default: Speaker
+    1: STRING - Subtitle - Default: Subtitle
+    2: OBJECT - Character which speaks the subtitle,  used to enable lip movement - Default: objNull
+  1: STRING - Chat type - Default: SIDE
     - SIDE
     - GLOBAL
     - VEHICLE
@@ -20,13 +20,13 @@
     - DIRECT
     - CUSTOM
     - SYSTEM
-  _this select 2: NUMBER - Break multiplier - Is used to calculate the display length of every line - Default: 0.1
-  _this select 3: BOOL   - Show background
+  2: NUMBER - Break multiplier - Is used to calculate the display length of every line - Default: 0.1
+  3: BOOLEAN - Show background
 
   Returns:
-  true
+  -
 
-  Example:
+  Examples:
 
   line1 = ["Sgt. Anderson",  "Papa Bear,  this is Alpha 1-1,  we are under heavy fire,  I repeat,  we are under heavy fire,  how copy?"];
   line2 = ["PAPA BEAR",  "Solid copy Alpha 1-1,  we are sending air support,  mark the enemy's position with red smoke,  Papa Bear out."];
