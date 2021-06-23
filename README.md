@@ -19,7 +19,7 @@ various colours representing the folllowing chat types
 - Automatic calculation of time between dialogue lines
 
 
-# Tool
+# Conversation Tool
 Thanks to tr3b for creating this awesome tool which makes using this script so much simpler. To use it, download the html file and open it in your favorite browser.
 
 [Conversation Tool](https://www.file-upload.net/download-12620151/arma3_conv.html.html)
