@@ -1,11 +1,14 @@
 /*
   Author: R3vo
-  Last update:  2016-08-21
+
+  Update:  2021-06-24
+  - Updated the script to modern standards
+
+  Update:  2016-08-21
   - added option for background
 
   Description:
   Displays a subtitle at the bottom of the screen. Name of the speaker can be defined and it's colour
-
   Parameters:
   0: ARRAY
     0: STRING - Name of the person speaking - Default: Speaker
@@ -22,21 +25,15 @@
     - SYSTEM
   2: NUMBER - Break multiplier - Is used to calculate the display length of every line - Default: 0.1
   3: BOOLEAN - Show background
-
   Returns:
   -
-
   Examples:
-
-  line1 = ["Sgt. Anderson",  "Papa Bear,  this is Alpha 1-1,  we are under heavy fire,  I repeat,  we are under heavy fire,  how copy?"];
-  line2 = ["PAPA BEAR",  "Solid copy Alpha 1-1,  we are sending air support,  mark the enemy's position with red smoke,  Papa Bear out."];
+  line1 = ["Sgt. Anderson", "Papa Bear, this is Alpha 1-1, we are under heavy fire, I repeat, we are under heavy fire, how copy?"];
+  line2 = ["PAPA BEAR", "Solid copy Alpha 1-1, we are sending air support, mark the enemy's position with red smoke, Papa Bear out."];
   [[line1, line2], "SIDE", 0.15, true] execVM "fn_simpleConv.sqf";
-
 */
 
-#define FADE_DURATION 0.5
 #define BACKGROUND_COLOUR [0, 0, 0, 0.4]
-#define BACKGROUND_H_COEF 0.0008
 
 waitUntil {isNil "R3vo_fnc_simpleConversation_running"};
 R3vo_fnc_simpleConversation_running = true;
@@ -67,54 +64,36 @@ private _fnc_showSubtitles =
 {
   params ["_from", "_text", "_colourHTML", "_break", "_showBackground"];
 
-  // Create display and control
+  //Create display and control
   disableSerialization;
-  titleRsc ["RscDynamicText",  "PLAIN"];
-  private "_display";
-  waitUntil {_display = uiNamespace getVariable "BIS_dynamicText"; !(isNull _display)};
-  private _ctrl = _display displayCtrl 9999;
-  uiNamespace setVariable ["BIS_dynamicText",  displayNull];
-  private _ctrlBackground = _display ctrlCreate ["RscText", 99999];
 
-  // Position control
+  ("R3vo_fnc_conversation_layer" call BIS_fnc_rscLayer) cutRsc ["RscDynamicText", "PLAIN"];
+  private _display = uiNamespace getVariable "BIS_dynamicText";
+
+  private _ctrlStructuredText = _display displayCtrl 9999;
+  private _ctrlBackground = _display ctrlCreate ["ctrlStaticFooter", 99999];
+
+  //Position control
   private _w = 0.4 * safeZoneW;
   private _x = safeZoneX + (0.5 * safeZoneW - (_w / 2));
   private _y = safeZoneY + (0.73 * safeZoneH);
   private _h = safeZoneH;
 
-  _ctrl ctrlSetPosition [_x, _y, _w, _h];
+  //Show subtitle
+  private _text = parseText format ["<t align = 'center' shadow = '2' size = '0.52'><t color = '%1'>" + _from + ":</t> <t color = '#d0d0d0'>" + _text + "</t></t>", _colourHTML];
+  _ctrlStructuredText ctrlSetStructuredText _text;
+  _ctrlStructuredText ctrlSetPosition [_x, _y, _w, _h];
+  _ctrlStructuredText ctrlSetFade 0;
+  _ctrlStructuredText ctrlCommit 0;
 
-  // Hide control
-  _ctrl ctrlSetFade 1;
-  _ctrl ctrlCommit 0;
-  if (_showBackground) then
- {
-    _ctrlBackground ctrlSetPosition [_x, _y, _w, ((count _text) / 2000) max 0.035];
-    _ctrlBackground ctrlSetBackgroundColor BACKGROUND_COLOUR;
-    _ctrlBackground ctrlSetFade 1;
-    _ctrlBackground ctrlCommit 0;
-  };
-  // Show subtitle
-  _text = parseText format ["<t align = 'center' shadow = '2' size = '0.52'><t color = '%1'>" + _from + ":</t> <t color = '#d0d0d0'>" + _text + "</t></t>", _colourHTML];
-  _ctrl ctrlSetStructuredText _text;
-  _ctrl ctrlSetFade 0;
-  _ctrl ctrlCommit FADE_DURATION;
-  if (_showBackground) then
- {
-    _ctrlBackground ctrlSetFade 0;
-    _ctrlBackground ctrlCommit FADE_DURATION;
-  };
+  _ctrlBackground ctrlSetPosition [_x, _y, _w, ctrlTextHeight _ctrlStructuredText];
+  _ctrlBackground ctrlSetFade 0;
+  _ctrlBackground ctrlCommit 0;
+
   sleep _break;
 
-  // Hide subtitle
-  _ctrl ctrlSetFade 1;
-  _ctrl ctrlCommit FADE_DURATION;
-
-  if (_showBackground) then
- {
-    _ctrlBackground ctrlSetFade 1;
-    _ctrlBackground ctrlCommit FADE_DURATION;
-  };
+  //Hide all controls
+  _display closeDisplay 0;
 };
 
 //Loop through all given lines
@@ -130,7 +109,7 @@ private _fnc_showSubtitles =
 
   if !(isNull _speaker) then {_speaker setRandomLip false};
 
-  sleep FADE_DURATION + 0.5;
+  sleep 0.5;
 } forEach _lines;
 
 R3vo_fnc_simpleConversation_running = nil;
