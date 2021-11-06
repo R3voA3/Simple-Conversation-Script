@@ -1,3 +1,4 @@
+
 /*
   Author: R3vo
 
@@ -45,25 +46,25 @@ private _breakMultiplier = param [2, 0.1, [0]];
 private _showBackground = param [3, false, [false]];
 
 //Select HEX colour from given string
-private _colourHTML = switch (toUpper _colour) do
+private _colourHTML = call
 {
-  case "SIDE": {"#00ccff"};
-  case "GLOBAL": {"#d7d7d9"};
-  case "VEHICLE": {"#fbd40b"};
-  case "COMMAND": {"#e5e760"};
-  case "GROUP": {"#beee7e"};
-  case "DIRECT": {"#fffffb"};
-  case "CUSTOM": {"#ec5a29"};
-  case "SYSTEM": {"#8a8a88"};
-  case "BLUFOR": {([WEST, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
-  case "OPFOR": {([EAST, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
-  case "GUER": {([INDEPENDENT, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
-  case "CIV": {([CIVILIAN, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
+  if (_colour == "SIDE") exitWith {"#00ccff"};
+  if (_colour == "GLOBAL") exitWith {"#d7d7d9"};
+  if (_colour == "VEHICLE") exitWith {"#fbd40b"};
+  if (_colour == "COMMAND") exitWith {"#e5e760"};
+  if (_colour == "DIRECT") exitWith {"#beee7e"};
+  if (_colour == "CUSTOM") exitWith {"#ec5a29"};
+  if (_colour == "SYSTEM") exitWith {"#8a8a88"};
+  if (_colour == "BLUFOR") exitWith {([WEST, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
+  if (_colour == "OPFOR") exitWith {([EAST, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
+  if (_colour == "GUER") exitWith {([INDEPENDENT, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
+  if (_colour == "CIV") exitWith {([CIVILIAN, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
+  if (_colour == "SIDE") exitWith {([CIVILIAN, false] call BIS_fnc_sideColor) call BIS_fnc_colorRGBtoHTML};
 };
 
 private _fnc_showSubtitles =
 {
-  params ["_from", "_text", "_break"];
+  params ["_from", "_text", "_break", "_colourHTML", "_showBackground"];
 
   //Create display and control
   disableSerialization;
@@ -108,7 +109,7 @@ private _fnc_showSubtitles =
   private _break = count _text * _breakMultiplier;
 
   if !(isNull _speaker) then {_speaker setRandomLip true};
-  private _handle = [_nameSpeaker, _text, _break] spawn _fnc_showSubtitles;
+  private _handle = [_nameSpeaker, _text, _break, _colourHTML, _showBackground] spawn _fnc_showSubtitles;
   waitUntil {scriptDone _handle};
 
   if !(isNull _speaker) then {_speaker setRandomLip false};
